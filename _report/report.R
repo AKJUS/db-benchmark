@@ -276,17 +276,24 @@ time_logs = function(path=getwd()) {
 
   # remove duckdb-latest for now
   ct = ct %>% filter(!(solution == 'duckdb-latest'))  
+  ct = ct %>% filter(!(solution == 'duckdb' &
+                     as.character(question) == "regression v1 v2 by id2 id4" &
+                     coalesce(numeric_version(as.character(version), strict = FALSE) <
+                              numeric_version("1.5.4"), FALSE)))
   d = model_time(ct)
   ll <- load_logs(path=path)
 
   ll$solution[ll$solution == "arrow"] <- "R-arrow"
   ll = ll %>% filter (!(solution == 'duckdb-latest'))
+  
   l = model_logs(clean_logs(ll))
 
   q = model_questions(clean_questions(load_questions(path=path)))
   
   lq = merge_logs_questions(l, q)
   ld = merge_time_logsquestions(d, lq)
+  # the re-join against logs reintroduces the dropped rows with NA timings, drop them again
+  
   lld = transform(ld)
   lld
 }
