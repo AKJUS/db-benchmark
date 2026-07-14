@@ -193,8 +193,6 @@ write_log(run=2, task=task, data=data_name, in_rows=in_nr, question=question, ou
 print_head_tail()
 con.execute("DROP TABLE IF EXISTS ans")
 
-time.sleep(60)
-
 question = "median v3 sd v3 by id4 id5" # q6
 t_start = timeit.default_timer()
 con.execute("CREATE %s TABLE ans AS SELECT id4, id5, quantile_cont(v3, 0.5) AS median_v3, stddev(v3) AS sd_v3 FROM x GROUP BY id4, id5" % table_type)
@@ -217,8 +215,6 @@ chkt = timeit.default_timer() - t_start
 write_log(run=2, task=task, data=data_name, in_rows=in_nr, question=question, out_rows=nr, out_cols=nc, solution=solution, version=ver, git=git, fun=fun, time_sec=t, mem_gb=m, cache=cache, chk=make_chk(chk), chk_time_sec=chkt, on_disk=on_disk, machine_type=machine_type)
 print_head_tail()
 con.execute("DROP TABLE IF EXISTS ans")
-
-time.sleep(60)
 
 question = "max v1 - min v2 by id3" # q7
 t_start = timeit.default_timer()
@@ -243,8 +239,6 @@ write_log(run=2, task=task, data=data_name, in_rows=in_nr, question=question, ou
 print_head_tail()
 con.execute("DROP TABLE IF EXISTS ans")
 
-time.sleep(60)
-
 question = "largest two v3 by id6" # q8
 t_start = timeit.default_timer()
 con.execute("CREATE %s TABLE ans AS SELECT id6, unnest(max(v3, 2)) largest2_v3 FROM x WHERE v3 IS NOT NULL GROUP BY id6" % table_type)
@@ -268,8 +262,6 @@ write_log(run=2, task=task, data=data_name, in_rows=in_nr, question=question, ou
 print_head_tail()
 con.execute("DROP TABLE IF EXISTS ans")
 
-time.sleep(60)
-
 question = "regression v1 v2 by id2 id4" # q9
 t_start = timeit.default_timer()
 con.execute("CREATE %s TABLE ans AS SELECT id2, id4, pow(corr(v1, v2), 2) AS r2 FROM x GROUP BY id2, id4" % table_type)
@@ -292,8 +284,6 @@ chkt = timeit.default_timer() - t_start
 write_log(run=2, task=task, data=data_name, in_rows=in_nr, question=question, out_rows=nr, out_cols=nc, solution=solution, version=ver, git=git, fun=fun, time_sec=t, mem_gb=m, cache=cache, chk=make_chk(chk), chk_time_sec=chkt, on_disk=on_disk, machine_type=machine_type)
 print_head_tail()
 con.execute("DROP TABLE IF EXISTS ans")
-
-time.sleep(60)
 
 question = "sum v3 count by id1:id6" # q10
 t_start = timeit.default_timer()
