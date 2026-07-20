@@ -79,6 +79,18 @@ clean_time = function(d) {
 
   # replace arrow with R-arrow (see https://github.com/duckdblabs/db-benchmark/pull/66)
   d$solution[d$solution == "arrow"] <- "R-arrow"
+
+  # Drop the haskell 2.2.0.0 run of batch 1783946249. Keyed on batch rather than on
+  # solution so that any future haskell run is reported normally. Two problems, both
+  # specific to this batch, which is the only haskell batch that produced timings:
+  #  1. its 'out_cols' disagree with every other solution for the same question (9 vs 3
+  #     on groupby "regression v1 v2 by id2 id4", 7 vs 8 on "sum v3 count by id1:id6",
+  #     and a constant 8 on every join question where the width should be 9/11/13). It
+  #     appears to report the shape of an input frame rather than of the result, so the
+  #     timings are not measuring the same computation. Trips the 'out_cols' check in
+  #     model_time().
+  # Dropped from the logs side too, in clean_logs(), otherwise the re-join brings it back.
+  d = d[!(batch==1783946249 & solution=="haskell")]
   d[!nzchar(git), git := NA_character_
     ][,"on_disk" := as.logical(on_disk)
       ][task=="groupby" & solution%in%c("pandas","dask","spark") & batch<1558106628, "out_cols" := NA_integer_
@@ -95,6 +107,10 @@ clean_time = function(d) {
 clean_logs = function(l) {
   if (nrow(l[!nzchar(version) | is.na(version)]))
     stop("logs data contains NA or '' as version field, that should not happen")
+  # see clean_time() for why this batch is excluded; dropping it from the timings alone
+  # is not enough because merge_time_logsquestions() joins with nomatch=NA onto the logs
+  # side, which would bring the batch back as all-NA rows
+  l = l[!(batch==1783946249 & solution=="haskell")]
   l[!nzchar(git), git := NA_character_
     ][, `:=`(nodename=ft(nodename), solution=ft(solution), version=ft(version), git=ft(git), task=ft(task), data=fctr(data, levels=unlist(get_data_levels())), action=ft(action))
       ][]
@@ -276,10 +292,13 @@ time_logs = function(path=getwd()) {
 
   # remove duckdb-latest for now
   ct = ct %>% filter(!(solution == 'duckdb-latest'))  
+  # filter these duckdb results since they were produced when duckdb was run with R, which did not ship with JEMalloc
+  # The R runtime would also be very precise on floating point results, while python was only precise to 2 digits.
+  # we filter the results so they are not compared to eachother, if they are, we get report generation errors
   ct = ct %>% filter(!(solution == 'duckdb' &
                      as.character(question) == "regression v1 v2 by id2 id4" &
                      coalesce(numeric_version(as.character(version), strict = FALSE) <
-                              numeric_version("1.5.4"), FALSE)))
+                              numeric_version("1.5.4"), FALSE))) 
   d = model_time(ct)
   ll <- load_logs(path=path)
 
