@@ -28,8 +28,14 @@ mem_usage = "240g"
 if machine_type == 'c6id.4xlarge':
      mem_usage = "30g"
 if "TEST_RUN" in os.environ:
-     mem_usage = "2g"
+     mem_usage = "8g"
 
+# In local[*] mode the driver JVM (which also hosts the executor) is launched by the py4j
+# gateway when the SparkSession is created. spark.driver.memory / spark.executor.memory set
+# through SparkConf are only read AFTER that JVM is already running, so they are silently
+# ignored and the heap defaults to ~1g -> java.lang.OutOfMemoryError: Java heap space.
+# Inject --driver-memory into PYSPARK_SUBMIT_ARGS so the heap is sized before the JVM starts.
+os.environ["PYSPARK_SUBMIT_ARGS"] = f"--driver-memory {mem_usage} pyspark-shell"
 
 from pyspark.conf import SparkConf
 spark = SparkSession.builder \
