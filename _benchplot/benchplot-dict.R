@@ -22,10 +22,15 @@ header_title_fun = function(x) {
     else if (sort>0L) " pre-sorted"
     else stop("internal error")
   } else ""
+  # The input schema is fixed by the data generator, so take the column count from the
+  # data name rather than from data_spec(). data_spec() counts columns by reading the
+  # csv out of data/, which is not present when only rendering the report, and falls
+  # back to NA, giving "Input table: ... x NA columns".
+  ncol = switch(substr(as.character(data_name), 1L, 2L), "G1"=9L, "J1"=7L, NA_integer_)
   sprintf(
     "Input table: %s rows x %s columns ( %s GB )%s",
     format_comma(as.numeric(ds[["nrow"]])[1L]),
-    as.numeric(ds[["ncol"]])[1L],
+    ncol,
     as.numeric(ds[["gb"]])[1L],
     extra
   )

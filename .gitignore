@@ -1,5 +1,6 @@
 figure/*
 metastore_db/*
+**/__pycache__
 *.log
 *.html
 *.csv
