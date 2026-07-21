@@ -10,6 +10,13 @@ on:
       sizes:
         type: string
         default: "small medium large"
+      tasks:
+        type: choice
+        default: "groupby join"
+        options:
+          - "groupby"
+          - "join"
+          - "groupby join"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.head_ref || '' }}-${{ github.base_ref || '' }}-${{ github.ref != 'refs/heads/master' || github.sha }}
@@ -20,6 +27,7 @@ env:
   gh_issue_repo: duckdblabs/db-benchmark
   instance_id: ${{ inputs.instance_id }}
   solutions: ${{ inputs.solutions }}
+  tasks: ${{ inputs.tasks }}
 
 
 jobs:
@@ -76,6 +84,9 @@ jobs:
           export new_solutions="${{ env.solutions }}"
           echo "testing solutions: " $new_solutions
           sed -i "s/export RUN_SOLUTIONS=.*/export RUN_SOLUTIONS=\"${new_solutions}\"/g" run.conf
+          export new_tasks="${{ env.tasks }}"
+          echo "testing tasks: " $new_tasks
+          sed -i "s/export RUN_TASKS=.*/export RUN_TASKS=\"${new_tasks}\"/g" run.conf
 
       - name: Run the benchmark
         shell: bash
