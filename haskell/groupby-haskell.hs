@@ -22,7 +22,7 @@ import DataFrame.IO.CSV (
 import DataFrame.IO.CSV.Fast
 import DataFrame.Internal.DataFrame (DataFrame)
 import DataFrame.Internal.Expression (AggStrategy (..), Expr (..))
-import DataFrame.Internal.Schema (schemaType)
+import DataFrame.Schema (schemaType)
 import qualified DataFrame.Operations.Aggregation as D
 import qualified DataFrame.Operations.Core as D
 import qualified DataFrame.Operations.Subset as D
@@ -206,6 +206,7 @@ runBenchmark srcFile dataName machineType = do
                 , "syy" .= F.sum (F.col @Double "v2v2")
                 ]
             >>> D.derive "r2" r2Expr
+            >>> D.select [F.name id2, F.name id4, "r2"]
         )
         (\res -> [chkSumDbl "r2" res])
 
@@ -215,9 +216,9 @@ runBenchmark srcFile dataName machineType = do
         df
         "sum v3 count by id1:id6"
         ( D.groupBy (map ((\i n -> i <> (T.pack . show) n) "id") [1 .. 6])
-            >>> D.aggregate [F.sum v3 `F.as` "v3_sum"]
+            >>> D.aggregate ["v3" .= F.sum v3, "count" .= F.count v3]
         )
-        (\res -> [chkSumDbl "v3_sum" res])
+        (\res -> [chkSumDbl "v3" res, chkSumInt "count" res])
 
     writeToLogFile config "finish"
     putStrLn "Haskell dataframe groupby benchmark completed!"

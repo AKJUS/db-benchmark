@@ -19,7 +19,7 @@ import DataFrame.IO.CSV (ReadOptions (..), TypeSpec (..), defaultReadOptions)
 import DataFrame.IO.CSV.Fast
 import DataFrame.Internal.DataFrame (DataFrame, rowToGroup)
 import DataFrame.Internal.Expression (AggStrategy (..), Expr (..))
-import DataFrame.Internal.Schema (schemaType)
+import DataFrame.Schema (schemaType)
 import qualified DataFrame.Operations.Aggregation as D
 import qualified DataFrame.Operations.Core as D
 import qualified DataFrame.Operations.Subset as D
