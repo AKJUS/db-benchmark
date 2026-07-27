@@ -20,7 +20,7 @@ import DataFrame.IO.CSV (
  )
 import DataFrame.IO.CSV.Fast (fastReadCsvWithOpts)
 import DataFrame.Internal.DataFrame (DataFrame)
-import DataFrame.Internal.Schema (SchemaType, schemaType)
+import DataFrame.Schema (SchemaType, schemaType)
 import qualified DataFrame.Operations.Core as D
 import qualified DataFrame.Operations.Join as DJ
 import Numeric (showEFloat)
