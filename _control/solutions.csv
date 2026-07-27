@@ -27,8 +27,6 @@ R-arrow,groupby
 R-arrow,join
 duckdb,groupby
 duckdb,join
-duckdb-latest,groupby
-duckdb-latest,join
 datafusion,groupby
 datafusion,join
 chdb,groupby
