@@ -88,6 +88,7 @@ runBenchmark srcFile dataName machineType = do
     print df
 
     ver <- lookupEnv "HASKELL_DF_VERSION" <&> fromMaybe ""
+    git <- readRevision
 
     let config =
             BenchConfig
@@ -96,14 +97,13 @@ runBenchmark srcFile dataName machineType = do
                 , cfgMachineType = machineType
                 , cfgSolution = "haskell"
                 , cfgVer = ver
-                , cfgGit = "NA"
+                , cfgGit = git
                 , cfgFun = "groupBy"
                 , cfgCache = "TRUE"
                 , cfgOnDisk = "FALSE"
                 , cfgInRows = inRows
                 }
 
-    writeToLogFile config "start"
     putStrLn "grouping..."
 
     -- Q1: Sum v1 by id1
@@ -220,7 +220,6 @@ runBenchmark srcFile dataName machineType = do
         )
         (\res -> [chkSumDbl "v3" res, chkSumInt "count" res])
 
-    writeToLogFile config "finish"
     putStrLn "Haskell dataframe groupby benchmark completed!"
 
 runQuestion ::

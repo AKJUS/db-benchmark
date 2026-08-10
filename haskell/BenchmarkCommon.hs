@@ -9,7 +9,7 @@ module BenchmarkCommon (
     getMemoryUsage,
     timeIt,
     writeLog,
-    writeToLogFile,
+    readRevision,
     roundTo,
     freshRun,
 ) where
@@ -191,53 +191,15 @@ writeLog BenchConfig{..} question outRows outCols run timeSec memGb chkValues ch
 
     return ()
 
-writeToLogFile :: BenchConfig -> String -> IO ()
-writeToLogFile BenchConfig{..} action = do
-    logFile <- lookupEnv "CSV_LOG_FILE" <&> fromMaybe "logs.csv"
-    batch <- lookupEnv "BATCH" <&> fromMaybe ""
-    timestamp <- getPOSIXTime
-    nodename <- fmap init (readProcess "hostname" [] "")
-    let logFileHeader =
-            V.fromList
-                [ "nodename"
-                , "batch"
-                , "solution"
-                , "version"
-                , "git"
-                , "task"
-                , "data"
-                , "timestamp"
-                , "action"
-                , "stderr"
-                , "ret"
-                , "machine_type"
-                ]
-    let logFileRow =
-            V.fromList
-                [ nodename
-                , batch
-                , cfgSolution
-                , cfgVer
-                , cfgGit
-                , cfgTask
-                , cfgDataName
-                , showFFloat (Just 5) (realToFrac timestamp) ""
-                , action
-                , if action == "finish" then "0" else ""
-                , if action == "finish" then "0" else ""
-                , cfgMachineType
-                ]
-    append <- doesFileExist logFile
-
-    let csvEncodeOptions = defaultEncodeOptions{encUseCrLf = False}
-    let csvData =
-            if append
-                then encodeWith csvEncodeOptions [logFileRow]
-                else encodeWith csvEncodeOptions [logFileHeader, logFileRow]
-
-    if append
-        then BL.appendFile logFile csvData
-        else BL.writeFile logFile csvData
+{- | Revision reported alongside the timings, matching what the launcher records
+in logs.csv from haskell/REVISION. The two must agree: the report joins time.csv
+to logs.csv on (version, git), and a mismatch drops the timings from the report.
+-}
+readRevision :: IO String
+readRevision =
+    catch
+        (takeWhile (`notElem` ("\r\n" :: String)) <$> readFile "haskell/REVISION")
+        (\(_ :: SomeException) -> return "NA")
 
 roundTo :: Int -> Double -> Double
 roundTo n x = fromInteger (round $ x * 10 ^ n) / 10.0 ^^ n
