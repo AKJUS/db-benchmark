@@ -56,6 +56,7 @@ main = do
         )
 
     ver <- lookupEnv "HASKELL_DF_VERSION" <&> fromMaybe ""
+    git <- readRevision
 
     let config =
             BenchConfig
@@ -64,7 +65,7 @@ main = do
                 , cfgMachineType = machineType
                 , cfgSolution = "haskell"
                 , cfgVer = ver
-                , cfgGit = "NA"
+                , cfgGit = git
                 , cfgFun = "innerJoin"
                 , cfgCache = "TRUE"
                 , cfgOnDisk = "FALSE"
@@ -72,8 +73,6 @@ main = do
                 }
 
     putStrLn "joining..."
-
-    writeToLogFile config "start"
 
     -- Q1: small inner on id1
     runJoin config dfX dfSmall "small inner on int" (DJ.innerJoin ["id1"])
@@ -95,7 +94,6 @@ main = do
     -- Q5: big inner on id3
     runJoin config dfX dfBig "big inner on int" (DJ.innerJoin ["id3"])
 
-    writeToLogFile config "finish"
     putStrLn "Haskell dataframe join benchmark completed!"
 
 {- | Schema columns: (name, SchemaType). id1/id2/id3 are Int, id4/id5/id6 Text,
