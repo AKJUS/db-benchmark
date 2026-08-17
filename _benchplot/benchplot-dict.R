@@ -369,6 +369,7 @@ groupby.data.exceptions = {list(                                                
   "chdb" = {list(
   )},
   "haskell" = {list(
+  	"Not tested/OOM" = c("G1_1e8_1e2_0_0", "G1_1e8_1e1_0_0", "G1_1e8_2e0_0_0", "G1_1e8_1e2_0_1", "G1_1e8_1e2_5_0", "G1_1e9_1e2_0_0","G1_1e9_1e2_0_1","G1_1e9_1e2_5_0","G1_1e9_1e1_0_0", "G1_1e9_2e0_0_0")
   )}
 )}
 groupby.exceptions = task.exceptions(groupby.query.exceptions, groupby.data.exceptions)
@@ -581,6 +582,7 @@ join.data.exceptions = {list(                                                   
   "chdb" = {list(
   )},
   "haskell" = {list(
+  	"Not tested/OOM" = c("J1_1e8_NA_0_0", "J1_1e8_NA_5_0", "J1_1e8_NA_0_1", "J1_1e9_NA_0_0")
   )}
 )}
 join.exceptions = task.exceptions(join.query.exceptions, join.data.exceptions)
